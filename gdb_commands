@@ -1,0 +1,7 @@
+add-symbol-file install/boot/KeaKernel
+target remote localhost:1234
+set disassembly-flavor intel
+layout split
+focus cmd
+cd kernel
+break _centry

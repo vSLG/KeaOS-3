@@ -1,4 +1,4 @@
-## Copyright (c) 2021 LabOS developers and contributors
+## Copyright (c) 2021 KeaOS/3 developers and contributors
 
 PHONY := __all
 __all:
@@ -7,7 +7,7 @@ include Makefile.config
 
 MAKEFLAGS += --no-print-directory
 
-iso      := LabOS.iso
+iso      := KeaOS.iso
 grub_cfg := grub.cfg
 instree  := $(abspath ./install)
 
@@ -25,14 +25,25 @@ install-grub: install-kernel
 PHONY += install install-kernel install-grub
 
 run: run-grub
+debug: run-grub-debug
 
 run-grub: install-grub
-	qemu-system-x86_64 								 \
-		-drive id=cd0,file=${iso},if=none,format=raw \
-		-device ahci,id=ahci 						 \
-		-device ide-cd,drive=cd0,bus=ahci.0 >/dev/null
+	qemu-system-x86_64 								   \
+		-drive id=cd0,file=${iso},if=none,format=raw   \
+		-device ahci,id=ahci 						   \
+		-device ide-cd,drive=cd0,bus=ahci.0   		   \
+		-serial stdio
 
-PHONY += run run-grub
+run-grub-debug: install-grub
+	qemu-system-x86_64 								   \
+		-drive id=cd0,file=${iso},if=none,format=raw   \
+		-device ahci,id=ahci 						   \
+		-device ide-cd,drive=cd0,bus=ahci.0            \
+		-serial file:serial-gdb.log					   \
+		-s -S &
+	sleep 1 && gdb -q -x gdb_commands
+
+PHONY += run debug run-grub run-grub-debug
 
 clean: clean-kernel
 	rm -rf "$(instree)"

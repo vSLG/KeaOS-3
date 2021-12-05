@@ -1,2 +1,4 @@
 install/
-LabOS.iso
+KeaOS.iso
+*compile_commands.json
+.cache
